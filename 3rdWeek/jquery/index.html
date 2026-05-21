@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ishani Giri - jQuery Profile Card</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <style>
+    :root {
+      --bg-main:    #0f0c1a;
+      --bg-card:    #1a1630;
+      --bg-skill:   #231e3d;
+      --accent1:    #7c5cbf;
+      --accent2:    #a67cff;
+      --accent3:    #c4a9ff;
+      --btn-main:   #5a3ea0;
+      --btn-hover:  #7c5cbf;
+      --text-head:  #e8deff;
+      --text-body:  #b0a0d6;
+      --text-muted: #7b6ea6;
+      --border:     #3a2f65;
+      --gold:       #f5c842;
+      --red:        #e74c3c;
+      --output-bg:  #1a1630;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Space Grotesk', Arial, sans-serif;
+      background: var(--bg-main);
+      min-height: 100vh;
+      padding: 35px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+    }
+
+    /* subtle starfield dots */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 20% 15%, #a67cff44 0%, transparent 100%),
+        radial-gradient(1px 1px at 75% 40%, #7c5cbf33 0%, transparent 100%),
+        radial-gradient(1px 1px at 50% 80%, #c4a9ff22 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    h1 {
+      color: var(--accent3);
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ===== PROFILE CARD ===== */
+    #profile-card {
+      width: 420px;
+      background: var(--bg-card);
+      padding: 28px;
+      border-radius: 22px;
+      border: 1.5px solid var(--border);
+      text-align: center;
+      transition: background 0.4s;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* glowing top line */
+    #profile-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 15%; right: 15%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent2), transparent);
+      border-radius: 2px;
+    }
+
+    #profile-photo {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 18px;
+      border: 3px solid var(--accent1);
+      margin-bottom: 16px;
+      transition: all 0.4s;
+      background: var(--bg-skill);
+    }
+
+    #student-name {
+      color: var(--text-head);
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    #student-bio {
+      color: var(--text-body);
+      margin-bottom: 16px;
+      line-height: 1.65;
+      font-size: 14px;
+    }
+
+    #student-bio strong {
+      color: var(--accent3);
+    }
+
+    #nickname-input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--bg-skill);
+      color: var(--text-head);
+      margin: 10px 0 20px;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    #nickname-input:focus {
+      border-color: var(--accent2);
+    }
+
+    #nickname-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    h3 {
+      color: var(--accent3);
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    #skills-list {
+      list-style: none;
+    }
+
+    #skills-list li {
+      background: var(--bg-skill);
+      border: 1px solid var(--border);
+      margin: 7px 0;
+      padding: 9px 14px;
+      border-radius: 10px;
+      color: var(--accent3);
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ===== BUTTONS ===== */
+    .buttons {
+      max-width: 680px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 9px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-label {
+      width: 100%;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      margin-top: 6px;
+      margin-bottom: -2px;
+    }
+
+    button {
+      padding: 9px 15px;
+      border: 1.5px solid var(--btn-main);
+      border-radius: 10px;
+      background: transparent;
+      color: var(--accent2);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.25s;
+      letter-spacing: 0.2px;
+    }
+
+    button:hover {
+      background: var(--btn-main);
+      color: #fff;
+      transform: translateY(-2px);
+      border-color: var(--accent2);
+    }
+
+    /* ===== OUTPUT BOX ===== */
+    #output {
+      width: 420px;
+      background: var(--output-bg);
+      border: 1.5px solid var(--border);
+      padding: 15px 18px;
+      border-radius: 14px;
+      min-height: 52px;
+      font-size: 15px;
+      color: var(--accent3);
+      word-break: break-word;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ===== JQUERY TOGGLED CLASSES ===== */
+    .highlighted {
+      border: 3px solid var(--gold) !important;
+    }
+
+    .dark-mode {
+      background: #0a0815 !important;
+      color: #e0d4ff !important;
+    }
+
+    .rounded {
+      border-radius: 50% !important;
+    }
+
+    .shadow {
+      box-shadow: 0 0 22px var(--accent1);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>✦ Ishani Giri – jQuery Profile Card</h1>
+
+  <div id="profile-card">
+    <img
+      id="profile-photo"
+      src="images\photo.jpg"
+      alt="Profile Photo"
+    />
+
+    <h2 id="student-name">Ishani Giri</h2>
+
+    <p id="student-bio">
+      <strong>Creative Web Designer</strong><br>
+      Passionate about HTML, CSS, JavaScript, and jQuery animations.
+      Loves creating beautiful and interactive websites.
+    </p>
+
+    <input type="text" id="nickname-input" placeholder="Enter your nickname" />
+
+    <h3> <b>My Skills</b> </h3>
+    <ul id="skills-list">
+      <li>HTML5</li>
+      <li>CSS3</li>
+      <li>JavaScript</li>
+      <li>jQuery</li>
+      <li>UI/UX Design</li>
+    </ul>
+  </div>
+
+  <div class="buttons">
+
+    <span class="btn-label">1 · GET &amp; SET</span>
+    <button id="show-name">Show Name</button>
+    <button id="change-name">Change Name</button>
+    <button id="show-bio">Show Bio</button>
+    <button id="get-input">Get Input</button>
+    <button id="set-input">Set Input</button>
+
+    <span class="btn-label">2 · CSS CLASSES</span>
+    <button id="highlight-card">Highlight Card</button>
+    <button id="remove-highlight">Remove Highlight</button>
+    <button id="toggle-dark">Toggle Dark Mode</button>
+    <button id="toggle-rounded">Toggle Rounded</button>
+
+    <span class="btn-label">3 · CSS METHOD</span>
+    <button id="red-bg">Red Background</button>
+    <button id="reset-bg">Reset Background</button>
+
+    <span class="btn-label">4 · HIDE &amp; SHOW</span>
+    <button id="hide-photo">Hide Photo</button>
+    <button id="show-photo">Show Photo</button>
+    <button id="toggle-bio">Toggle Bio</button>
+
+    <span class="btn-label">5 · FADE</span>
+    <button id="fade-out">Fade Out Card</button>
+    <button id="fade-in">Fade In Card</button>
+    <button id="fade-half">Fade to 50%</button>
+
+    <span class="btn-label">6 · SLIDE</span>
+    <button id="slide-up">Slide Up Skills</button>
+    <button id="slide-down">Slide Down Skills</button>
+    <button id="slide-toggle">Slide Toggle Skills</button>
+
+    <span class="btn-label">7 · ANIMATE</span>
+    <button id="animate-card">Animate Card</button>
+
+  </div>
+
+  <div id="output">✨ Output will appear here...</div>
+
+  <script>
+    $(document).ready(function () {
+
+      // ── 1. GET & SET ──────────────────────────
+
+      $("#show-name").click(function () {
+        var name = $("#student-name").text();
+        $("#output").text(name);
+      });
+
+      $("#change-name").click(function () {
+        $("#student-name").text("Ishmriti Giri");
+      });
+
+      $("#show-bio").click(function () {
+        var bio = $("#student-bio").html();
+        $("#output").text(bio);
+      });
+
+      $("#get-input").click(function () {
+        var value = $("#nickname-input").val();
+        $("#output").text("Nickname: " + value);
+      });
+
+      $("#set-input").click(function () {
+        $("#nickname-input").val("jQuery Pro");
+        $("#output").text("Input set to: jQuery Pro");
+      });
+
+      // ── 2. CSS CLASSES ────────────────────────
+
+      $("#highlight-card").click(function () {
+        $("#profile-card").addClass("highlighted");
+        $("#output").text("Class 'highlighted' ADDED.");
+      });
+
+      $("#remove-highlight").click(function () {
+        $("#profile-card").removeClass("highlighted");
+        $("#output").text("Class 'highlighted' REMOVED.");
+      });
+
+      $("#toggle-dark").click(function () {
+        $("#profile-card").toggleClass("dark-mode");
+        $("#output").text("Dark mode TOGGLED.");
+      });
+
+      $("#toggle-rounded").click(function () {
+        $("#profile-photo").toggleClass("rounded");
+        $("#output").text("Rounded class TOGGLED on photo.");
+      });
+
+      // ── 3. CSS METHOD ─────────────────────────
+
+      $("#red-bg").click(function () {
+        $("#profile-card").css("background", "#e74c3c");
+        $("#output").text("Background changed to RED.");
+      });
+
+      $("#reset-bg").click(function () {
+        $("#profile-card").css("background", "#1a1630");
+        $("#output").text("Background reset.");
+      });
+
+      // ── 4. HIDE & SHOW ────────────────────────
+
+      $("#hide-photo").click(function () {
+        $("#profile-photo").hide("slow");
+        $("#output").text("Photo HIDDEN.");
+      });
+
+      $("#show-photo").click(function () {
+        $("#profile-photo").show("slow");
+        $("#output").text("Photo SHOWN.");
+      });
+
+      $("#toggle-bio").click(function () {
+        $("#student-bio").toggle();
+        $("#output").text("Bio TOGGLED.");
+      });
+
+      // ── 5. FADE ───────────────────────────────
+
+      $("#fade-out").click(function () {
+        $("#profile-card").fadeOut();
+        $("#output").text("Card FADED OUT.");
+      });
+
+      $("#fade-in").click(function () {
+        $("#profile-card").fadeIn();
+        $("#output").text("Card FADED IN.");
+      });
+
+      $("#fade-half").click(function () {
+        $("#profile-card").fadeTo("slow", 0.5);
+        $("#output").text("Card faded to 50% opacity.");
+      });
+
+      // ── 6. SLIDE ──────────────────────────────
+
+      $("#slide-up").click(function () {
+        $("#skills-list").slideUp();
+        $("#output").text("Skills list SLID UP (hidden).");
+      });
+
+      $("#slide-down").click(function () {
+        $("#skills-list").slideDown();
+        $("#output").text("Skills list SLID DOWN (shown).");
+      });
+
+      $("#slide-toggle").click(function () {
+        $("#skills-list").slideToggle();
+        $("#output").text("Skills list SLIDE TOGGLED.");
+      });
+
+      // ── 7. ANIMATE ────────────────────────────
+
+      $("#animate-card").click(function () {
+        $("#profile-card")
+          .animate({ marginLeft: "200px" }, 1000)
+          .animate({ marginLeft: "0px"   }, 1000);
+        $("#output").text("Card ANIMATED (slide right then back).");
+      });
+
+      // ── 8. EVENTS ─────────────────────────────
+
+      $("#profile-photo").mouseenter(function () {
+        $(this).addClass("shadow");
+      });
+
+      $("#profile-photo").mouseleave(function () {
+        $(this).removeClass("shadow");
+      });
+
+      $("#nickname-input").keypress(function (event) {
+        $("#output").text("Key pressed: " + event.key);
+      });
+
+    });
+  </script>
+
+</body>
+</html>
